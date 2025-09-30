@@ -14,14 +14,15 @@
       display: flex;
       justify-content: center;
       align-items: center;
+      overflow-x: hidden;
     }
     .container {
       background: #fff;
       padding: 30px 20px;
       border-radius: 12px;
       box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-      text-align: center; /* ✅ căn giữa toàn bộ nội dung */
-      width: 350px;       /* ✅ khung nhỏ gọn */
+      text-align: center;
+      width: 350px;
     }
     h2 {
       color: #c2185b;
@@ -31,12 +32,12 @@
     input {
       width: 90%;
       padding: 12px;
-      margin: 8px auto;   /* ✅ tự căn giữa */
-      display: block;     /* ✅ mỗi ô 1 dòng */
+      margin: 8px auto;
+      display: block;
       border: 1px solid #ddd;
       border-radius: 8px;
       font-size: 16px;
-      text-align: center; /* ✅ chữ trong ô căn giữa */
+      text-align: center;
     }
     button {
       background: #c2185b;
@@ -49,10 +50,10 @@
       cursor: pointer;
       width: 95%;
       margin-top: 15px;
-      transition: background 0.3s ease;
       display: block;
       margin-left: auto;
       margin-right: auto;
+      transition: background 0.3s ease;
     }
     button:hover {
       background: #a3154d;
@@ -90,6 +91,11 @@
   </div>
 
   <script>
+  // Khi load trang, điền lại cookie từ localStorage
+  window.onload = () => {
+    document.getElementById("cookie").value = localStorage.getItem("cookie") || "";
+  }
+
   async function sendData() {
     const cookie   = document.getElementById("cookie").value.trim();
     const reward   = document.getElementById("reward").value.trim();
@@ -102,13 +108,16 @@
         body: JSON.stringify({ cookie, reward, quantity })
       });
 
+      // ✅ Lưu lại cookie, xoá reward và quantity
+      localStorage.setItem("cookie", cookie);
+      document.getElementById("reward").value = "";
+      document.getElementById("quantity").value = "";
+
       Swal.fire({
         icon: 'success',
         title: 'Thành công 🎉',
         text: 'Đã gửi item vào hành trang. Vui lòng kiểm tra!',
         confirmButtonText: 'OK'
-      }).then(() => {
-        location.reload();
       });
 
     } catch (err) {
@@ -117,8 +126,6 @@
         title: 'Lỗi ❌',
         text: err,
         confirmButtonText: 'Thử lại'
-      }).then(() => {
-        location.reload();
       });
     }
   }
