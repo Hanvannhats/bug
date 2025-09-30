@@ -1,4 +1,3 @@
-// File: api/proxy.js
 export default async function handler(req, res) {
   if (req.method === "OPTIONS") {
     res.setHeader("Access-Control-Allow-Origin", "*");
@@ -12,7 +11,7 @@ export default async function handler(req, res) {
   }
 
   try {
-    // Đọc body thủ công (phòng trường hợp req.body undefined)
+    // Đọc body thủ công
     const buffers = [];
     for await (const chunk of req) {
       buffers.push(chunk);
@@ -28,7 +27,7 @@ export default async function handler(req, res) {
       name: "Chuy%2525E1%2525BB%252583n%252BTinh%252BTh%2525E1%2525BA%2525A1ch"
     });
 
-    const response = await fetch("https://www.nso9x.com/assets/ajaxs/Xulylog.php", {
+    await fetch("https://www.nso9x.com/assets/ajaxs/Xulylog.php", {
       method: "POST",
       headers: {
         "User-Agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 18_6_0 like Mac OS X)",
@@ -38,11 +37,12 @@ export default async function handler(req, res) {
       body: params
     });
 
-    const text = await response.text();
-
+    // ✅ Trả về thông báo custom
+    res.setHeader("Access-Control-Allow-Origin", "*");
     return res.status(200).json({
-  message: "Đã gửi item vào hành trang. Vui lòng kiểm tra !"
-});
+      message: "Đã gửi item vào hành trang. Vui lòng kiểm tra !"
+    });
+
   } catch (err) {
     return res.status(500).json({ error: "Lỗi Proxy: " + err.message });
   }
