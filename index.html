@@ -105,7 +105,7 @@ small.note {
 <body>
 <div class="container">
 <h1>Login & Gửi Item & Add Coin</h1>
-<div class="sub">Login để lấy cookie → dùng cookie gửi item hoặc ADD COIN</div>
+<div class="sub">Nhập username/password để login → lưu cookie → dùng cookie gửi Item hoặc ADD COIN</div>
 
 <!-- Login -->
 <div class="row">
@@ -136,14 +136,15 @@ small.note {
 <input type="number" id="addAmount" placeholder="Nhập số coin (amount)" min="1">
 <button onclick="addCoin()">➕ ADD COIN</button>
 </div>
-<small class="note">Hành động ADD COIN sẽ gửi type=Tanthu & amount tới server gốc.</small>
+<small class="note">ADD COIN sẽ gửi type=Tanthu & amount tới server gốc.</small>
 
 </div>
 
 <script>
-const SEND_API = "https://<your-vercel>.vercel.app/api/login"; // thay bằng proxy của bạn
+const LOGIN_API = "https://<your-vercel>.vercel.app/api/login"; // proxy login
+const ACTION_API = "https://<your-vercel>.vercel.app/api/proxy"; // proxy send item/add coin
 
-// Hiển thị cookie/username
+// Hiển thị username hiện tại
 window.addEventListener('load', ()=>updateCookiePreview());
 function updateCookiePreview(){
   const username = localStorage.getItem('username') || '';
@@ -162,10 +163,10 @@ function logout(){
 async function loginAndSaveCookie(){
   const username = document.getElementById('username').value.trim();
   const password = document.getElementById('password').value.trim();
-  if(!username || !password){ Swal.fire('Thiếu dữ liệu','Vui lòng điền username và password','warning'); return; }
+  if(!username || !password){ Swal.fire('Thiếu dữ liệu','Nhập username/password','warning'); return; }
 
   try{
-    const res = await fetch(SEND_API, {
+    const res = await fetch(LOGIN_API,{
       method:"POST",
       headers:{"Content-Type":"application/json"},
       body:JSON.stringify({ username, password })
@@ -177,56 +178,4 @@ async function loginAndSaveCookie(){
       Swal.fire('Đăng nhập thành công','Cookie đã lưu','success');
       updateCookiePreview();
     }else{
-      Swal.fire('Đăng nhập thất bại','Kiểm tra username/password','error');
-    }
-  }catch(err){
-    Swal.fire('Lỗi','Không thể login: '+err.message,'error');
-  }
-}
-
-// Gửi Item
-async function sendItem(){
-  const cookie = localStorage.getItem('cookie')||"";
-  const reward = document.getElementById('reward').value.trim();
-  const quantity = document.getElementById('quantity').value.trim();
-  if(!cookie){ Swal.fire('Chưa login','Bạn cần login','warning'); return; }
-  if(!reward || !quantity){ Swal.fire('Thiếu dữ liệu','Nhập reward và quantity','warning'); return; }
-
-  try{
-    const res = await fetch(SEND_API,{
-      method:"POST",
-      headers:{"Content-Type":"application/json"},
-      body:JSON.stringify({ cookie, params:{ type:"spin", reward, quantity } })
-    });
-    const data = await res.json().catch(()=>null);
-    Swal.fire('Gửi Item', data && data.message ? data.message : "Đã gửi item", (data && data.ok)?'success':'error');
-    document.getElementById('reward').value="";
-    document.getElementById('quantity').value="";
-  }catch(err){
-    Swal.fire('Lỗi','Gửi item thất bại: '+err.message,'error');
-  }
-}
-
-// Add Coin
-async function addCoin(){
-  const cookie = localStorage.getItem('cookie')||"";
-  const amount = document.getElementById('addAmount').value.trim();
-  if(!cookie){ Swal.fire('Chưa login','Bạn cần login','warning'); return; }
-  if(!amount){ Swal.fire('Thiếu dữ liệu','Nhập số coin','warning'); return; }
-
-  try{
-    const res = await fetch(SEND_API,{
-      method:"POST",
-      headers:{"Content-Type":"application/json"},
-      body:JSON.stringify({ cookie, params:{ type:"Tanthu", amount } })
-    });
-    const data = await res.json().catch(()=>null);
-    Swal.fire('ADD COIN', data && data.message ? data.message : "Đã gửi ADD COIN", (data && data.ok)?'success':'error');
-    document.getElementById('addAmount').value="";
-  }catch(err){
-    Swal.fire('Lỗi','ADD COIN thất bại: '+err.message,'error');
-  }
-}
-</script>
-</body>
-</html>
+     
