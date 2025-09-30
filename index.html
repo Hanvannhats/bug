@@ -6,72 +6,167 @@
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <style>
-/* (giữ nguyên style từ bản trước) */
-html,body{height:100%;margin:0;padding:0;font-family:Arial,Helvetica,sans-serif;background:#f6f0f6;display:flex;align-items:center;justify-content:center;overflow:hidden;}
-.container{width:95%;max-width:700px;height:92%;background:#fff;border-radius:14px;box-shadow:0 8px 30px rgba(0,0,0,0.12);padding:28px;box-sizing:border-box;position:relative;overflow:hidden;display:flex;flex-direction:column;align-items:center;justify-content:center;}
-h1{margin:0 0 12px 0;color:#b91c57;font-size:28px;text-align:center;}
-.sub{color:#666;margin-bottom:18px;text-align:center;}
-.row{width:100%;display:flex;gap:12px;justify-content:center;align-items:center;flex-wrap:wrap;}
-input[type="text"],input[type="password"],input[type="number"]{width:calc(45% - 12px);min-width:180px;padding:16px;font-size:18px;border:2px solid #eee;border-radius:10px;text-align:center;box-sizing:border-box;}
-.full{width:calc(95% - 12px);}
-button{background:#c2185b;color:white;border:none;padding:16px;border-radius:10px;cursor:pointer;font-size:18px;font-weight:700;width:calc(50% - 12px);min-width:180px;}
-button.secondary{background:#555;width:calc(40% - 12px);}
-hr{width:90%;border:none;border-top:1px solid #eee;margin:18px 0;}
-small.note{color:#888;display:block;text-align:center;margin-top:8px;}
-.sakura{position:absolute;top:-40px;width:26px;height:26px;background:url('https://i.imgur.com/5xHCn8R.png') no-repeat center/contain;pointer-events:none;z-index:5;animation:fall linear forwards;}
-@keyframes fall{to{transform:translateY(100%) rotate(360deg);opacity:0.9}}
-@media(max-width:520px){input[type="text"],input[type="password"],input[type="number"]{width:90%;}button{width:90%;margin-top:8px}}
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  font-family: Arial, Helvetica, sans-serif;
+  background: #f6f0f6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.container {
+  width: 95%;
+  max-width: 700px;
+  height: 90%;
+  background: #fff;
+  border-radius: 14px;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+  padding: 20px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+
+h1 {
+  margin: 0 0 12px 0;
+  color: #b91c57;
+  font-size: 32px;
+  text-align: center;
+}
+
+.sub {
+  color: #666;
+  margin-bottom: 18px;
+  text-align: center;
+}
+
+.row {
+  width: 100%;
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+
+input[type="text"], input[type="password"], input[type="number"] {
+  width: calc(45% - 12px);
+  min-width: 200px;
+  padding: 18px;
+  font-size: 20px;
+  border: 2px solid #eee;
+  border-radius: 12px;
+  text-align: center;
+  box-sizing: border-box;
+}
+
+button {
+  background: #c2185b;
+  color: white;
+  border: none;
+  padding: 18px;
+  border-radius: 12px;
+  cursor: pointer;
+  font-size: 20px;
+  font-weight: 700;
+  width: calc(50% - 12px);
+  min-width: 200px;
+}
+
+button.secondary {
+  background: #555;
+  width: calc(40% - 12px);
+}
+
+hr {
+  width: 90%;
+  border: none;
+  border-top: 1px solid #eee;
+  margin: 18px 0;
+}
+
+small.note {
+  color: #888;
+  display: block;
+  text-align: center;
+  margin-top: 8px;
+}
+
+.sakura {
+  position: absolute;
+  top: -40px;
+  width: 26px;
+  height: 26px;
+  background: url('https://i.imgur.com/5xHCn8R.png') no-repeat center/contain;
+  pointer-events: none;
+  z-index: 5;
+  animation: fall linear forwards;
+}
+
+@keyframes fall {
+  to { transform: translateY(100%) rotate(360deg); opacity:0.9; }
+}
+
+@media(max-width:520px){
+  input[type="text"], input[type="password"], input[type="number"], button {
+    width: 90%;
+    margin-top: 8px;
+  }
+}
 </style>
 </head>
 <body>
 <div class="container" id="formContainer">
-  <h1>Login & Gửi Item & Add Coin</h1>
-  <div class="sub">Login để lấy cookie → dùng cookie gửi item hoặc ADD COIN</div>
+<h1>Login & Gửi Item & Add Coin</h1>
+<div class="sub">Login để lấy cookie → dùng cookie gửi item hoặc ADD COIN</div>
 
-  <!-- LOGIN -->
-  <div class="row" style="margin-bottom:12px;">
-    <input type="text" id="username" placeholder="Username">
-    <input type="password" id="password" placeholder="Password">
-  </div>
-  <div class="row" style="margin-bottom:8px;">
-    <button onclick="loginAndSaveCookie()">🔑 Login & Lưu Cookie</button>
-    <button class="secondary" onclick="logout()">🚪 Logout</button>
-  </div>
-  <small class="note">Bạn đang đăng nhập tài khoản có tên là <span id="cookiePreview" style="font-weight:600;color:#333">Chưa đăng nhập</span></small>
+<!-- LOGIN -->
+<div class="row" style="margin-bottom:12px;">
+<input type="text" id="username" placeholder="Username">
+<input type="password" id="password" placeholder="Password">
+</div>
+<div class="row" style="margin-bottom:8px;">
+<button onclick="loginAndSaveCookie()">🔑 Login & Lưu Cookie</button>
+<button class="secondary" onclick="logout()">🚪 Logout</button>
+</div>
+<small class="note">Bạn đang đăng nhập tài khoản có tên là <span id="cookiePreview" style="font-weight:600;color:#333">Chưa đăng nhập</span></small>
 
-  <hr>
+<hr>
 
-  <!-- GỬI ITEM -->
-  <div class="row" style="margin-top:6px;">
-    <input type="text" id="reward" placeholder="Nhập ID ITEM">
-    <input type="number" id="quantity" placeholder="Số lượng" min="1">
-  </div>
-  <div class="row" style="margin-top:12px;">
-    <button onclick="sendItem()">🚀 Gửi Item</button>
-  </div>
+<!-- GỬI ITEM -->
+<div class="row" style="margin-top:6px;">
+<input type="text" id="reward" placeholder="Nhập ID ITEM">
+<input type="number" id="quantity" placeholder="Số lượng" min="1">
+</div>
+<div class="row" style="margin-top:12px;">
+<button onclick="sendItem()">🚀 Gửi Item</button>
+</div>
 
-  <hr>
-
-  <!-- ADD COIN -->
-  <div style="width:100%; margin-top:10px;">
-    <div class="row">
-      <input type="number" id="addAmount" placeholder="Nhập số coin (amount)" min="1" style="width:calc(45% - 12px);">
-      <div style="width:calc(45% - 12px); display:flex; justify-content:center; align-items:center;">
-        <button onclick="addCoin()" style="width:100%;">➕ ADD COIN</button>
-      </div>
-    </div>
-    <small class="note">Hành động ADD COIN sẽ gửi `type=Tanthu&amount=...` tới server gốc.</small>
-  </div>
+<!-- ADD COIN -->
+<hr>
+<div class="row" style="margin-top:12px;">
+<input type="number" id="addAmount" placeholder="Nhập số coin (amount)" min="1" style="width:calc(45% - 12px);">
+<button onclick="addCoin()" style="width:calc(45% - 12px);">➕ ADD COIN</button>
+</div>
+<small class="note">Hành động ADD COIN sẽ gửi type=Tanthu & amount tới server gốc.</small>
 
 </div>
 
 <script>
-const VERCEL_BASE = "https://bug-blush.vercel.app";
-const LOGIN_API = VERCEL_BASE + "/api/login";
+const VERCEL_BASE = "https://bug-blush.vercel.app"; // đổi URL Vercel của bạn
 const SEND_API  = VERCEL_BASE + "/api/proxy";
 
+// Hiển thị cookie/username
 window.addEventListener('load', ()=> updateCookiePreview());
-
 function updateCookiePreview(){
   const username = localStorage.getItem('username') || '';
   const display = username ? username : "Chưa đăng nhập";
@@ -85,93 +180,85 @@ function logout(){
   updateCookiePreview();
 }
 
-async function loginAndSaveCookie(){
+// Hàm login (giữ nguyên hoặc sửa theo bạn)
+async function loginAndSaveCookie(){ 
   const username = document.getElementById('username').value.trim();
   const password = document.getElementById('password').value.trim();
-  if(!username || !password){ Swal.fire('Chưa đủ dữ liệu','Vui lòng nhập username và password','warning'); return; }
-  try {
-    const res = await fetch(LOGIN_API, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ username, password })
+  if(!username || !password){ Swal.fire('Thiếu dữ liệu','Vui lòng điền username và password','warning'); return; }
+
+  try{
+    const res = await fetch(SEND_API,{
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({ params:{ type:"Login", username, password } })
     });
-    const data = await res.json();
-    if(data && data.cookie && data.cookie.length){
-      localStorage.setItem('cookie', data.cookie);
+    const data = await res.json().catch(()=>null);
+    if(data && data.success){
+      localStorage.setItem('cookie', data.raw || '');
       localStorage.setItem('username', username);
-      Swal.fire('Login thành công','Cookie đã được lưu.','success');
+      Swal.fire('Đăng nhập thành công','Cookie đã lưu','success');
       updateCookiePreview();
-      return;
+    }else{
+      Swal.fire('Đăng nhập thất bại','Kiểm tra username/password','error');
     }
-    const raw = data && data.raw ? data.raw : JSON.stringify(data);
-    Swal.fire('Không lấy được cookie','Server trả: ' + raw,'error');
-  } catch(err) {
-    Swal.fire('Lỗi kết nối','Không thể gọi API login: ' + err.message,'error');
-    console.error(err);
+  }catch(err){
+    Swal.fire('Lỗi','Không thể login: '+err.message,'error');
   }
 }
 
-// Gửi item (giữ hành xử như trước)
+// Gửi Item
 async function sendItem(){
   const cookie = localStorage.getItem('cookie') || "";
   const reward = document.getElementById('reward').value.trim();
   const quantity = document.getElementById('quantity').value.trim();
   if(!cookie){ Swal.fire('Chưa login','Bạn cần login để lấy cookie trước','warning'); return; }
-  if(!reward || !quantity){ Swal.fire('Thiếu dữ liệu','Vui lòng nhập ID ITEM và số lượng','warning'); return; }
+  if(!reward || !quantity){ Swal.fire('Thiếu dữ liệu','Vui lòng nhập reward và quantity','warning'); return; }
+
   try {
-    const res = await fetch(SEND_API, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ cookie, params: { type: "spin", reward, quantity, name: "Chuy%2525E1%2525BB%252583n%252BTinh%252BTh%2525E1%2525BA%2525A1ch" } })
+    const res = await fetch(SEND_API,{
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({ cookie, params:{ type:"spin", reward, quantity } })
     });
     const data = await res.json().catch(()=>null);
-    document.getElementById('reward').value = "";
-    document.getElementById('quantity').value = "";
-    Swal.fire('Thành công','Đã gửi item.','success');
-    for(let i=0;i<15;i++) createSakura();
-  } catch(err){
-    Swal.fire('Lỗi','Gửi item thất bại: ' + err.message,'error');
-    console.error(err);
+    Swal.fire('Gửi Item', data && data.message ? data.message : "Đã gửi item", (data && data.success)?'success':'error');
+    document.getElementById('reward').value="";
+    document.getElementById('quantity').value="";
+    for(let i=0;i<12;i++) createSakura();
+  }catch(err){
+    Swal.fire('Lỗi','Gửi item thất bại: '+err.message,'error');
   }
 }
 
-// ADD COIN -> gửi type=Tanthu & amount
+// ADD COIN
 async function addCoin(){
   const cookie = localStorage.getItem('cookie') || "";
   const amount = document.getElementById('addAmount').value.trim();
   if(!cookie){ Swal.fire('Chưa login','Bạn cần login để lấy cookie trước','warning'); return; }
-  if(!amount){ Swal.fire('Thiếu dữ liệu','Vui lòng nhập số coin', 'warning'); return; }
+  if(!amount){ Swal.fire('Thiếu dữ liệu','Vui lòng nhập số coin','warning'); return; }
 
   try {
-    const res = await fetch(SEND_API, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      // gửi params động: type=Tanthu, amount=...
-      body: JSON.stringify({ cookie, params: { type: "Tanthu", amount } })
+    const res = await fetch(SEND_API,{
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({ cookie, params:{ type:"Tanthu", amount } })
     });
     const data = await res.json().catch(()=>null);
-
-    // show result message (nếu proxy trả message/raw) hoặc generic
-    const msg = data && data.message ? data.message : (data && data.raw ? data.raw : "Đã gửi yêu cầu ADD COIN. Vui lòng kiểm tra.");
-    Swal.fire({ icon: (data && data.success) ? 'success' : 'success', title: 'ADD COIN', text: msg });
-    // reset input amount
-    document.getElementById('addAmount').value = "";
-    // hoa rơi ăn mừng
+    Swal.fire('ADD COIN', data && data.message ? data.message : "Đã gửi ADD COIN", (data && data.success)?'success':'error');
+    document.getElementById('addAmount').value="";
     for(let i=0;i<12;i++) createSakura();
-  } catch(err){
-    Swal.fire('Lỗi','ADD COIN thất bại: ' + err.message,'error');
-    console.error(err);
+  }catch(err){
+    Swal.fire('Lỗi','ADD COIN thất bại: '+err.message,'error');
   }
 }
 
-// hoa rơi trong form
+// Hoa rơi
 function createSakura(){
   const container = document.getElementById('formContainer');
   if(!container) return;
   const sakura = document.createElement('div');
   sakura.className = 'sakura';
-  const maxLeft = Math.max(0, container.clientWidth - 30);
-  sakura.style.left = (Math.random() * maxLeft) + 'px';
+  sakura.style.left = (Math.random() * (container.clientWidth - 30)) + 'px';
   sakura.style.top  = (-Math.random() * 40) + 'px';
   sakura.style.animationDuration = (Math.random() * 1.6 + 1.6) + 's';
   container.appendChild(sakura);
