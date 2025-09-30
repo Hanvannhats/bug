@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-<meta charset="utf-8" />
+<meta charset="utf-8">
 <title>Login & Gửi Item & Add Coin</title>
-<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <style>
 html, body {
@@ -13,9 +13,8 @@ html, body {
   font-family: Arial, Helvetica, sans-serif;
   background: #f6f0f6;
   display: flex;
-  align-items: center;
   justify-content: center;
-  overflow: hidden;
+  align-items: center;
 }
 
 .container {
@@ -26,7 +25,6 @@ html, body {
   border-radius: 14px;
   box-shadow: 0 8px 30px rgba(0,0,0,0.12);
   padding: 20px;
-  box-sizing: border-box;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -36,10 +34,10 @@ html, body {
 }
 
 h1 {
-  margin: 0 0 12px 0;
   color: #b91c57;
   font-size: 32px;
   text-align: center;
+  margin-bottom: 12px;
 }
 
 .sub {
@@ -51,9 +49,8 @@ h1 {
 .row {
   width: 100%;
   display: flex;
-  gap: 12px;
   justify-content: center;
-  align-items: center;
+  gap: 12px;
   flex-wrap: wrap;
   margin-bottom: 12px;
 }
@@ -63,23 +60,23 @@ input[type="text"], input[type="password"], input[type="number"] {
   min-width: 200px;
   padding: 18px;
   font-size: 20px;
-  border: 2px solid #eee;
   border-radius: 12px;
+  border: 2px solid #eee;
   text-align: center;
   box-sizing: border-box;
 }
 
 button {
-  background: #c2185b;
-  color: white;
-  border: none;
   padding: 18px;
-  border-radius: 12px;
-  cursor: pointer;
   font-size: 20px;
   font-weight: 700;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
   width: calc(50% - 12px);
   min-width: 200px;
+  background: #c2185b;
+  color: #fff;
 }
 
 button.secondary {
@@ -96,8 +93,8 @@ hr {
 
 small.note {
   color: #888;
-  display: block;
   text-align: center;
+  display: block;
   margin-top: 8px;
 }
 
@@ -112,9 +109,7 @@ small.note {
   animation: fall linear forwards;
 }
 
-@keyframes fall {
-  to { transform: translateY(100%) rotate(360deg); opacity:0.9; }
-}
+@keyframes fall { to { transform: translateY(100%) rotate(360deg); opacity: 0.9; } }
 
 @media(max-width:520px){
   input[type="text"], input[type="password"], input[type="number"], button {
@@ -129,50 +124,50 @@ small.note {
 <h1>Login & Gửi Item & Add Coin</h1>
 <div class="sub">Login để lấy cookie → dùng cookie gửi item hoặc ADD COIN</div>
 
-<!-- LOGIN -->
-<div class="row" style="margin-bottom:12px;">
+<!-- Login -->
+<div class="row">
 <input type="text" id="username" placeholder="Username">
 <input type="password" id="password" placeholder="Password">
 </div>
-<div class="row" style="margin-bottom:8px;">
+<div class="row">
 <button onclick="loginAndSaveCookie()">🔑 Login & Lưu Cookie</button>
 <button class="secondary" onclick="logout()">🚪 Logout</button>
 </div>
-<small class="note">Bạn đang đăng nhập tài khoản có tên là <span id="cookiePreview" style="font-weight:600;color:#333">Chưa đăng nhập</span></small>
+<small class="note">Bạn đang đăng nhập tài khoản: <span id="cookiePreview">Chưa đăng nhập</span></small>
 
 <hr>
 
-<!-- GỬI ITEM -->
-<div class="row" style="margin-top:6px;">
+<!-- Send Item -->
+<div class="row">
 <input type="text" id="reward" placeholder="Nhập ID ITEM">
 <input type="number" id="quantity" placeholder="Số lượng" min="1">
 </div>
-<div class="row" style="margin-top:12px;">
+<div class="row">
 <button onclick="sendItem()">🚀 Gửi Item</button>
 </div>
 
-<!-- ADD COIN -->
 <hr>
-<div class="row" style="margin-top:12px;">
-<input type="number" id="addAmount" placeholder="Nhập số coin (amount)" min="1" style="width:calc(45% - 12px);">
-<button onclick="addCoin()" style="width:calc(45% - 12px);">➕ ADD COIN</button>
+
+<!-- Add Coin -->
+<div class="row">
+<input type="number" id="addAmount" placeholder="Nhập số coin (amount)" min="1">
+<button onclick="addCoin()">➕ ADD COIN</button>
 </div>
 <small class="note">Hành động ADD COIN sẽ gửi type=Tanthu & amount tới server gốc.</small>
 
 </div>
 
 <script>
-const VERCEL_BASE = "https://bug-blush.vercel.app"; // đổi URL Vercel của bạn
-const SEND_API  = VERCEL_BASE + "/api/proxy";
+const SEND_API = "https://bug-blush.vercel.app/api/proxy";
 
-// Hiển thị cookie/username
-window.addEventListener('load', ()=> updateCookiePreview());
+// Cập nhật hiển thị cookie/username
+window.addEventListener('load', ()=>updateCookiePreview());
 function updateCookiePreview(){
   const username = localStorage.getItem('username') || '';
-  const display = username ? username : "Chưa đăng nhập";
-  document.getElementById('cookiePreview').textContent = display;
+  document.getElementById('cookiePreview').textContent = username || "Chưa đăng nhập";
 }
 
+// Logout
 function logout(){
   localStorage.removeItem('cookie');
   localStorage.removeItem('username');
@@ -180,21 +175,21 @@ function logout(){
   updateCookiePreview();
 }
 
-// Hàm login (giữ nguyên hoặc sửa theo bạn)
-async function loginAndSaveCookie(){ 
+// Login
+async function loginAndSaveCookie(){
   const username = document.getElementById('username').value.trim();
   const password = document.getElementById('password').value.trim();
   if(!username || !password){ Swal.fire('Thiếu dữ liệu','Vui lòng điền username và password','warning'); return; }
 
   try{
-    const res = await fetch(SEND_API,{
+    const res = await fetch(SEND_API, {
       method:"POST",
       headers:{"Content-Type":"application/json"},
       body:JSON.stringify({ params:{ type:"Login", username, password } })
     });
     const data = await res.json().catch(()=>null);
     if(data && data.success){
-      localStorage.setItem('cookie', data.raw || '');
+      localStorage.setItem('cookie', data.raw||'');
       localStorage.setItem('username', username);
       Swal.fire('Đăng nhập thành công','Cookie đã lưu','success');
       updateCookiePreview();
@@ -208,13 +203,13 @@ async function loginAndSaveCookie(){
 
 // Gửi Item
 async function sendItem(){
-  const cookie = localStorage.getItem('cookie') || "";
+  const cookie = localStorage.getItem('cookie')||"";
   const reward = document.getElementById('reward').value.trim();
   const quantity = document.getElementById('quantity').value.trim();
-  if(!cookie){ Swal.fire('Chưa login','Bạn cần login để lấy cookie trước','warning'); return; }
-  if(!reward || !quantity){ Swal.fire('Thiếu dữ liệu','Vui lòng nhập reward và quantity','warning'); return; }
+  if(!cookie){ Swal.fire('Chưa login','Bạn cần login','warning'); return; }
+  if(!reward || !quantity){ Swal.fire('Thiếu dữ liệu','Nhập reward và quantity','warning'); return; }
 
-  try {
+  try{
     const res = await fetch(SEND_API,{
       method:"POST",
       headers:{"Content-Type":"application/json"},
@@ -230,14 +225,14 @@ async function sendItem(){
   }
 }
 
-// ADD COIN
+// Add Coin
 async function addCoin(){
-  const cookie = localStorage.getItem('cookie') || "";
+  const cookie = localStorage.getItem('cookie')||"";
   const amount = document.getElementById('addAmount').value.trim();
-  if(!cookie){ Swal.fire('Chưa login','Bạn cần login để lấy cookie trước','warning'); return; }
-  if(!amount){ Swal.fire('Thiếu dữ liệu','Vui lòng nhập số coin','warning'); return; }
+  if(!cookie){ Swal.fire('Chưa login','Bạn cần login','warning'); return; }
+  if(!amount){ Swal.fire('Thiếu dữ liệu','Nhập số coin','warning'); return; }
 
-  try {
+  try{
     const res = await fetch(SEND_API,{
       method:"POST",
       headers:{"Content-Type":"application/json"},
@@ -258,11 +253,11 @@ function createSakura(){
   if(!container) return;
   const sakura = document.createElement('div');
   sakura.className = 'sakura';
-  sakura.style.left = (Math.random() * (container.clientWidth - 30)) + 'px';
-  sakura.style.top  = (-Math.random() * 40) + 'px';
-  sakura.style.animationDuration = (Math.random() * 1.6 + 1.6) + 's';
+  sakura.style.left = (Math.random()*(container.clientWidth-30))+'px';
+  sakura.style.top = (-Math.random()*40)+'px';
+  sakura.style.animationDuration = (Math.random()*1.6+1.6)+'s';
   container.appendChild(sakura);
-  setTimeout(()=> sakura.remove(), 4200);
+  setTimeout(()=>sakura.remove(),4200);
 }
 </script>
 </body>
