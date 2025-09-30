@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Form gửi dữ liệu</title>
+</head>
+<body>
+  <h2>Gửi Request với Cookie</h2>
+
+  <label>Cookie:</label><br>
+  <input type="text" id="cookie" size="100" placeholder="Nhập cookie..."><br><br>
+
+  <label>Reward:</label><br>
+  <input type="text" id="reward" value="1070"><br><br>
+
+  <label>Quantity:</label><br>
+  <input type="text" id="quantity" value="5000"><br><br>
+
+  <button onclick="sendData()">OK</button>
+
+  <pre id="result"></pre>
+
+  <script>
+    async function sendData() {
+      const cookie   = document.getElementById("cookie").value.trim();
+      const reward   = document.getElementById("reward").value.trim();
+      const quantity = document.getElementById("quantity").value.trim();
+
+      if (!cookie) {
+        alert("Vui lòng nhập cookie!");
+        return;
+      }
+
+      try {
+        const response = await fetch("https://www.nso9x.com/assets/ajaxs/Xulylog.php", {
+          method: "POST",
+          headers: {
+            "User-Agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 18_6_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) CriOS/139.0.7258.76 Mobile/15E148 Safari/604.1",
+            "Content-Type": "application/x-www-form-urlencoded",
+            "Cookie": cookie
+          },
+          body: new URLSearchParams({
+            type: "spin",
+            reward: reward,
+            quantity: quantity,
+            name: "Chuy%2525E1%2525BB%252583n%252BTinh%252BTh%2525E1%2525BA%2525A1ch"
+          })
+        });
+
+        const resultText = await response.text();
+        document.getElementById("result").textContent = resultText;
+      } catch (err) {
+        document.getElementById("result").textContent = "Lỗi: " + err;
+      }
+    }
+  </script>
+</body>
+</html>
