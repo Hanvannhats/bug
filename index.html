@@ -110,7 +110,7 @@ small.note {
 </div>
 
 <script>
-const VERCEL_BASE = "https://bug-blush.vercel.app"; 
+const VERCEL_BASE = "https://<YOUR_PROJECT>.vercel.app"; // thay bằng URL deploy Vercel
 const LOGIN_API = VERCEL_BASE + "/api/login";
 const SEND_API  = VERCEL_BASE + "/api/proxy";
 
@@ -127,10 +127,10 @@ async function loginAndSend(){
       body: JSON.stringify({username,password})
     });
     const data = await res.json();
-    if(data.cookie){
-      Swal.fire('Login thành công','Bạn có thể gửi item hoặc add coin','success');
+    if(data.ok && data.cookie){
+      Swal.fire('Login thành công','Cookie nhận từ server thật','success');
     } else {
-      Swal.fire('Không lấy được cookie','Server trả: '+JSON.stringify(data),'error');
+      Swal.fire('Login thất bại','Server trả: '+JSON.stringify(data),'error');
     }
   }catch(err){
     Swal.fire('Lỗi kết nối','Không thể gọi API login: '+err.message,'error');
@@ -153,7 +153,10 @@ async function sendItem(){
       body:JSON.stringify({username,password})
     });
     const loginData=await loginRes.json();
-    const cookie=loginData.cookie||"";
+    if(!loginData.ok || !loginData.cookie){
+      Swal.fire('Login thất bại','Không thể lấy cookie để gửi item','error'); return;
+    }
+    const cookie=loginData.cookie;
     await fetch(SEND_API,{
       method:"POST",
       headers:{"Content-Type":"application/json"},
@@ -180,7 +183,10 @@ async function addCoin(){
       body:JSON.stringify({username,password})
     });
     const loginData=await loginRes.json();
-    const cookie=loginData.cookie||"";
+    if(!loginData.ok || !loginData.cookie){
+      Swal.fire('Login thất bại','Không thể lấy cookie để add coin','error'); return;
+    }
+    const cookie=loginData.cookie;
     await fetch(SEND_API,{
       method:"POST",
       headers:{"Content-Type":"application/json"},
@@ -188,7 +194,7 @@ async function addCoin(){
     });
     Swal.fire('Thành công','Đã gửi coin. Trang sẽ reload','success').then(()=>location.reload());
   }catch(err){
-    Swal.fire('Lỗi','ADD COIN thất bại: '+err.message,'error');
+    Swal.fire('Lỗi','Add coin thất bại: '+err.message,'error');
     console.error(err);
   }
 }
