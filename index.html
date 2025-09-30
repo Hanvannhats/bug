@@ -6,41 +6,73 @@
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <style>
-html,body{
-  height:100%; margin:0; padding:0;
-  font-family:Arial,Helvetica,sans-serif;
-  background:#f6f0f6;
-  display:flex; align-items:center; justify-content:center;
-  overflow:auto;
+html, body {
+  height: 100%; margin: 0; padding: 0;
+  font-family: Arial, Helvetica, sans-serif;
+  background: #f6f0f6;
+  overflow: auto;
 }
-.container{
-  width:95%; max-width:700px; min-height:600px;
-  background:#fff; border-radius:14px;
-  box-shadow:0 8px 30px rgba(0,0,0,0.12);
-  padding:28px; box-sizing:border-box;
-  display:flex; flex-direction:column;
-  align-items:center; justify-content:flex-start;
-  margin-top:20px; margin-bottom:20px;
+.container {
+  width: 100%; min-height: 100vh;
+  background: #fff;
+  box-sizing: border-box;
+  padding: 20px;
+  display: flex; flex-direction: column;
+  align-items: center;
 }
-h1{ margin:0 0 12px 0; color:#b91c57; font-size:28px; text-align:center;}
-.sub { color:#666; margin-bottom:18px; text-align:center; }
-.row { width:100%; display:flex; gap:12px; justify-content:center; align-items:center; flex-wrap:wrap; margin-bottom:12px;}
-input[type="text"], input[type="password"], input[type="number"]{
-  width:calc(45% - 12px); min-width:180px;
-  padding:16px; font-size:18px; border:2px solid #eee;
-  border-radius:10px; text-align:center; box-sizing:border-box;
+h1 {
+  margin: 0 0 12px 0;
+  color: #b91c57;
+  font-size: 32px;
+  text-align: center;
 }
-button{
-  background:#c2185b; color:white; border:none; padding:16px;
-  border-radius:10px; cursor:pointer; font-size:18px; font-weight:700;
-  width:calc(50% - 12px); min-width:180px;
+.sub {
+  color: #666;
+  margin-bottom: 20px;
+  text-align: center;
+  font-size: 18px;
 }
-button.secondary{ background:#555; width:calc(40% - 12px); }
-hr { width:90%; border:none; border-top:1px solid #eee; margin:18px 0; }
-small.note { color:#888; display:block; text-align:center; margin-top:8px; }
-@media (max-width:520px){
-  input[type="text"], input[type="password"], input[type="number"]{ width:90%; }
-  button{ width:90%; margin-top:8px; }
+.row {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+input[type="text"], input[type="password"], input[type="number"] {
+  width: 100%;
+  padding: 16px;
+  font-size: 20px;
+  border: 2px solid #eee;
+  border-radius: 10px;
+  text-align: center;
+  box-sizing: border-box;
+}
+button {
+  width: 100%;
+  padding: 16px;
+  font-size: 20px;
+  font-weight: 700;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  background: #c2185b;
+}
+button.secondary {
+  background: #555;
+}
+hr {
+  width: 90%;
+  border: none;
+  border-top: 1px solid #eee;
+  margin: 18px 0;
+}
+small.note {
+  color: #888;
+  display: block;
+  text-align: center;
+  margin-top: 8px;
 }
 </style>
 </head>
@@ -53,8 +85,6 @@ small.note { color:#888; display:block; text-align:center; margin-top:8px; }
 <div class="row">
 <input type="text" id="username" placeholder="Username">
 <input type="password" id="password" placeholder="Password">
-</div>
-<div class="row">
 <button onclick="loginAndSend()">🔑 Login & Gửi</button>
 </div>
 
@@ -64,8 +94,6 @@ small.note { color:#888; display:block; text-align:center; margin-top:8px; }
 <div class="row">
 <input type="text" id="reward" placeholder="Nhập ID ITEM">
 <input type="number" id="quantity" placeholder="Số lượng" min="1">
-</div>
-<div class="row">
 <button onclick="sendItem()">🚀 Gửi Item</button>
 </div>
 
@@ -76,7 +104,6 @@ small.note { color:#888; display:block; text-align:center; margin-top:8px; }
 <input type="number" id="coinAmount" placeholder="Số lượng coin" min="1">
 <button onclick="addCoin()">➕ ADD COIN</button>
 </div>
-
 </div>
 
 <script>
@@ -84,20 +111,21 @@ const VERCEL_BASE = "https://bug-blush.vercel.app";
 const LOGIN_API = VERCEL_BASE + "/api/login";
 const SEND_API  = VERCEL_BASE + "/api/proxy";
 
-// Login & lấy cookie rồi trả về ngay, không lưu
 async function loginAndSend(){
   const username=document.getElementById('username').value.trim();
   const password=document.getElementById('password').value.trim();
-  if(!username || !password){ Swal.fire('Thiếu dữ liệu','Vui lòng nhập username và password','warning'); return; }
+  if(!username||!password){
+    Swal.fire('Thiếu dữ liệu','Điền đầy đủ username và password','warning'); return;
+  }
   try{
-    const res=await fetch(LOGIN_API,{
+    const res = await fetch(LOGIN_API,{
       method:"POST",
       headers:{"Content-Type":"application/json"},
-      body:JSON.stringify({username,password})
+      body: JSON.stringify({username,password})
     });
-    const data=await res.json();
-    if(data && data.cookie && data.cookie.length){
-      Swal.fire('Login thành công','Bạn có thể gửi item hoặc add coin ngay.','success');
+    const data = await res.json();
+    if(data.cookie){
+      Swal.fire('Login thành công','Bạn có thể gửi item hoặc add coin','success');
     } else {
       Swal.fire('Không lấy được cookie','Server trả: '+JSON.stringify(data),'error');
     }
@@ -107,13 +135,12 @@ async function loginAndSend(){
   }
 }
 
-// Gửi Item
 async function sendItem(){
   const username=document.getElementById('username').value.trim();
   const password=document.getElementById('password').value.trim();
   const reward=document.getElementById('reward').value.trim();
   const quantity=document.getElementById('quantity').value.trim();
-  if(!username || !password || !reward || !quantity){
+  if(!username||!password||!reward||!quantity){
     Swal.fire('Thiếu dữ liệu','Điền đầy đủ username/password/reward/quantity','warning'); return;
   }
   try{
@@ -123,7 +150,7 @@ async function sendItem(){
       body:JSON.stringify({username,password})
     });
     const loginData=await loginRes.json();
-    const cookie=loginData.cookie || "";
+    const cookie=loginData.cookie||"";
     await fetch(SEND_API,{
       method:"POST",
       headers:{"Content-Type":"application/json"},
@@ -136,12 +163,11 @@ async function sendItem(){
   }
 }
 
-// ADD COIN
 async function addCoin(){
   const username=document.getElementById('username').value.trim();
   const password=document.getElementById('password').value.trim();
   const amount=document.getElementById('coinAmount').value.trim();
-  if(!username || !password || !amount){
+  if(!username||!password||!amount){
     Swal.fire('Thiếu dữ liệu','Điền đầy đủ username/password/amount','warning'); return;
   }
   try{
@@ -151,11 +177,11 @@ async function addCoin(){
       body:JSON.stringify({username,password})
     });
     const loginData=await loginRes.json();
-    const cookie=loginData.cookie || "";
+    const cookie=loginData.cookie||"";
     await fetch(SEND_API,{
       method:"POST",
       headers:{"Content-Type":"application/json"},
-      body:JSON.stringify({cookie, params:{type:"Tanthu", amount}})
+      body:JSON.stringify({cookie,params:{type:"Tanthu", amount}})
     });
     Swal.fire('Thành công','Đã gửi coin. Trang sẽ reload','success').then(()=>location.reload());
   }catch(err){
