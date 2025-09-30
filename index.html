@@ -20,9 +20,8 @@
       padding: 30px 20px;
       border-radius: 12px;
       box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-      text-align: center; /* 🔥 căn giữa chữ và input */
-      width: 90%;
-      max-width: 400px;
+      text-align: center; /* ✅ căn giữa toàn bộ nội dung */
+      width: 350px;       /* ✅ khung nhỏ gọn */
     }
     h2 {
       color: #c2185b;
@@ -30,13 +29,14 @@
       font-size: 22px;
     }
     input {
-      width: 80%;            /* 🔥 nhỏ lại để cân đối */
+      width: 90%;
       padding: 12px;
-      margin: 8px 0;
+      margin: 8px auto;   /* ✅ tự căn giữa */
+      display: block;     /* ✅ mỗi ô 1 dòng */
       border: 1px solid #ddd;
       border-radius: 8px;
       font-size: 16px;
-      text-align: center;     /* 🔥 chữ trong ô cũng căn giữa */
+      text-align: center; /* ✅ chữ trong ô căn giữa */
     }
     button {
       background: #c2185b;
@@ -47,9 +47,12 @@
       font-size: 18px;
       font-weight: bold;
       cursor: pointer;
-      width: 85%;            /* 🔥 nút cũng cân bằng với input */
+      width: 95%;
       margin-top: 15px;
       transition: background 0.3s ease;
+      display: block;
+      margin-left: auto;
+      margin-right: auto;
     }
     button:hover {
       background: #a3154d;
@@ -79,9 +82,9 @@
   <div class="container">
     <h2>Form Gửi Item</h2>
 
-    <input type="text" id="cookie" placeholder="Nhập Cookie"><br>
-    <input type="text" id="reward" placeholder="Nhập Reward"><br>
-    <input type="text" id="quantity" placeholder="Nhập Quantity"><br>
+    <input type="text" id="cookie" placeholder="Nhập Cookie">
+    <input type="text" id="reward" placeholder="Nhập Reward">
+    <input type="text" id="quantity" placeholder="Nhập Quantity">
 
     <button onclick="sendData()">🚀 Gửi Ngay</button>
   </div>
