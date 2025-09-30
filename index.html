@@ -12,10 +12,7 @@ html, body {
   padding: 0;
   font-family: Arial, Helvetica, sans-serif;
   background: #f6f0f6;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  overflow: hidden;
+  overflow: auto;
 }
 
 .container {
@@ -26,23 +23,22 @@ html, body {
   border-radius: 14px;
   box-shadow: 0 8px 30px rgba(0,0,0,0.12);
   padding: 20px;
+  margin: 20px auto;
   display: flex;
   flex-direction: column;
   align-items: center;
-  overflow-y: auto;
-  position: relative;
 }
 
 h1 {
   color: #b91c57;
-  font-size: 32px;
+  font-size: 36px;
   text-align: center;
-  margin-bottom: 12px;
+  margin-bottom: 16px;
 }
 
 .sub {
   color: #666;
-  margin-bottom: 18px;
+  margin-bottom: 20px;
   text-align: center;
 }
 
@@ -50,16 +46,16 @@ h1 {
   width: 100%;
   display: flex;
   justify-content: center;
-  gap: 12px;
+  gap: 16px;
   flex-wrap: wrap;
-  margin-bottom: 12px;
+  margin-bottom: 16px;
 }
 
 input[type="text"], input[type="password"], input[type="number"] {
-  width: calc(45% - 12px);
-  min-width: 150px;
-  padding: 16px;
-  font-size: 18px;
+  width: 40%;
+  min-width: 180px;
+  padding: 20px;
+  font-size: 20px;
   border-radius: 12px;
   border: 2px solid #eee;
   text-align: center;
@@ -67,28 +63,28 @@ input[type="text"], input[type="password"], input[type="number"] {
 }
 
 button {
-  padding: 16px;
-  font-size: 18px;
+  padding: 20px;
+  font-size: 22px;
   font-weight: 700;
   border: none;
   border-radius: 12px;
   cursor: pointer;
-  width: calc(50% - 12px);
-  min-width: 150px;
+  width: 45%;
+  min-width: 180px;
   background: #c2185b;
   color: #fff;
 }
 
 button.secondary {
   background: #555;
-  width: calc(40% - 12px);
+  width: 40%;
 }
 
 hr {
   width: 90%;
   border: none;
   border-top: 1px solid #eee;
-  margin: 18px 0;
+  margin: 20px 0;
 }
 
 small.note {
@@ -98,29 +94,16 @@ small.note {
   margin-top: 8px;
 }
 
-.sakura {
-  position: absolute;
-  top: -40px;
-  width: 26px;
-  height: 26px;
-  background: url('https://i.imgur.com/5xHCn8R.png') no-repeat center/contain;
-  pointer-events: none;
-  z-index: 5;
-  animation: fall linear forwards;
-}
-
-@keyframes fall { to { transform: translateY(100%) rotate(360deg); opacity:0.9; } }
-
-@media(max-width:520px){
+@media(max-width:600px){
   input[type="text"], input[type="password"], input[type="number"], button {
     width: 90%;
-    margin-top: 8px;
+    margin-top: 10px;
   }
 }
 </style>
 </head>
 <body>
-<div class="container" id="formContainer">
+<div class="container">
 <h1>Login & Gửi Item & Add Coin</h1>
 <div class="sub">Login để lấy cookie → dùng cookie gửi item hoặc ADD COIN</div>
 
@@ -158,9 +141,9 @@ small.note {
 </div>
 
 <script>
-const SEND_API = "https://bug-blush.vercel.app/api/proxy";
+const SEND_API = "https://<your-vercel>.vercel.app/api/login"; // thay bằng proxy của bạn
 
-// Cập nhật hiển thị cookie/username
+// Hiển thị cookie/username
 window.addEventListener('load', ()=>updateCookiePreview());
 function updateCookiePreview(){
   const username = localStorage.getItem('username') || '';
@@ -185,11 +168,11 @@ async function loginAndSaveCookie(){
     const res = await fetch(SEND_API, {
       method:"POST",
       headers:{"Content-Type":"application/json"},
-      body:JSON.stringify({ params:{ type:"Login", username, password } })
+      body:JSON.stringify({ username, password })
     });
-    const data = await res.json().catch(()=>null);
-    if(data && data.success){
-      localStorage.setItem('cookie', data.raw||'');
+    const data = await res.json();
+    if(data && data.cookie){
+      localStorage.setItem('cookie', data.cookie);
       localStorage.setItem('username', username);
       Swal.fire('Đăng nhập thành công','Cookie đã lưu','success');
       updateCookiePreview();
@@ -216,10 +199,9 @@ async function sendItem(){
       body:JSON.stringify({ cookie, params:{ type:"spin", reward, quantity } })
     });
     const data = await res.json().catch(()=>null);
-    Swal.fire('Gửi Item', data && data.message ? data.message : "Đã gửi item", (data && data.success)?'success':'error');
+    Swal.fire('Gửi Item', data && data.message ? data.message : "Đã gửi item", (data && data.ok)?'success':'error');
     document.getElementById('reward').value="";
     document.getElementById('quantity').value="";
-    for(let i=0;i<12;i++) createSakura();
   }catch(err){
     Swal.fire('Lỗi','Gửi item thất bại: '+err.message,'error');
   }
@@ -239,25 +221,11 @@ async function addCoin(){
       body:JSON.stringify({ cookie, params:{ type:"Tanthu", amount } })
     });
     const data = await res.json().catch(()=>null);
-    Swal.fire('ADD COIN', data && data.message ? data.message : "Đã gửi ADD COIN", (data && data.success)?'success':'error');
+    Swal.fire('ADD COIN', data && data.message ? data.message : "Đã gửi ADD COIN", (data && data.ok)?'success':'error');
     document.getElementById('addAmount').value="";
-    for(let i=0;i<12;i++) createSakura();
   }catch(err){
     Swal.fire('Lỗi','ADD COIN thất bại: '+err.message,'error');
   }
-}
-
-// Hoa rơi
-function createSakura(){
-  const container = document.getElementById('formContainer');
-  if(!container) return;
-  const sakura = document.createElement('div');
-  sakura.className = 'sakura';
-  sakura.style.left = (Math.random()*(container.clientWidth-30))+'px';
-  sakura.style.top = (-Math.random()*40)+'px';
-  sakura.style.animationDuration = (Math.random()*1.6+1.6)+'s';
-  container.appendChild(sakura);
-  setTimeout(()=>sakura.remove(),4200);
 }
 </script>
 </body>
