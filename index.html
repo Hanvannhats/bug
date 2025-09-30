@@ -10,7 +10,6 @@
       padding: 0;
       font-family: Arial, sans-serif;
       background: #fdf6f9;
-      overflow-x: hidden;
       height: 100vh;
       display: flex;
       justify-content: center;
@@ -21,9 +20,9 @@
       padding: 30px 20px;
       border-radius: 12px;
       box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-      text-align: center;
+      text-align: center; /* 🔥 căn giữa chữ và input */
       width: 90%;
-      max-width: 500px;
+      max-width: 400px;
     }
     h2 {
       color: #c2185b;
@@ -31,13 +30,13 @@
       font-size: 22px;
     }
     input {
-      width: 100%;
-      padding: 14px;
-      margin: 10px 0;
+      width: 80%;            /* 🔥 nhỏ lại để cân đối */
+      padding: 12px;
+      margin: 8px 0;
       border: 1px solid #ddd;
       border-radius: 8px;
       font-size: 16px;
-      box-sizing: border-box;
+      text-align: center;     /* 🔥 chữ trong ô cũng căn giữa */
     }
     button {
       background: #c2185b;
@@ -48,21 +47,22 @@
       font-size: 18px;
       font-weight: bold;
       cursor: pointer;
-      width: 100%;
+      width: 85%;            /* 🔥 nút cũng cân bằng với input */
       margin-top: 15px;
       transition: background 0.3s ease;
     }
     button:hover {
       background: #a3154d;
     }
+
     /* 🌸 Hoa rơi */
     .sakura {
       position: fixed;
       top: -10px;
-      background: url('https://pngimg.com/uploads/cherry_blossom/cherry_blossom_PNG12576.png') no-repeat;
+      background: url('https://i.imgur.com/5xHCn8R.png') no-repeat;
       background-size: contain;
-      width: 30px;
-      height: 30px;
+      width: 20px;
+      height: 20px;
       pointer-events: none;
       z-index: 9999;
       animation: fall linear forwards;
@@ -79,9 +79,9 @@
   <div class="container">
     <h2>Form Gửi Item</h2>
 
-    <input type="text" id="cookie" placeholder="Nhập Cookie">
-    <input type="text" id="reward" placeholder="Nhập Reward">
-    <input type="text" id="quantity" placeholder="Nhập Quantity">
+    <input type="text" id="cookie" placeholder="Nhập Cookie"><br>
+    <input type="text" id="reward" placeholder="Nhập Reward"><br>
+    <input type="text" id="quantity" placeholder="Nhập Quantity"><br>
 
     <button onclick="sendData()">🚀 Gửi Ngay</button>
   </div>
@@ -99,7 +99,6 @@
         body: JSON.stringify({ cookie, reward, quantity })
       });
 
-      // ✅ Popup đẹp với SweetAlert2
       Swal.fire({
         icon: 'success',
         title: 'Thành công 🎉',
@@ -126,11 +125,13 @@
     const sakura = document.createElement("div");
     sakura.className = "sakura";
     sakura.style.left = Math.random() * window.innerWidth + "px";
-    sakura.style.animationDuration = (Math.random() * 3 + 2) + "s";
+    sakura.style.animationDuration = (Math.random() * 3 + 3) + "s";
     document.body.appendChild(sakura);
-    setTimeout(() => sakura.remove(), 5000);
+    setTimeout(() => sakura.remove(), 6000);
   }
-  setInterval(createSakura, 500);
+  setInterval(() => {
+    for (let i = 0; i < 3; i++) createSakura();
+  }, 600);
   </script>
 </body>
 </html>
