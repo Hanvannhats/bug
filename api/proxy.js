@@ -1,7 +1,6 @@
 // File: api/proxy.js
 export default async function handler(req, res) {
   if (req.method === "OPTIONS") {
-    // Xử lý preflight CORS
     res.setHeader("Access-Control-Allow-Origin", "*");
     res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
     res.setHeader("Access-Control-Allow-Headers", "Content-Type");
@@ -13,12 +12,19 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { cookie, reward, quantity } = req.body; // nhận từ client (JSON)
+    // Đọc body thủ công (phòng trường hợp req.body undefined)
+    const buffers = [];
+    for await (const chunk of req) {
+      buffers.push(chunk);
+    }
+    const data = JSON.parse(Buffer.concat(buffers).toString());
+
+    const { cookie, reward, quantity } = data;
 
     const params = new URLSearchParams({
       type: "spin",
-      reward: reward,
-      quantity: quantity,
+      reward,
+      quantity,
       name: "Chuy%2525E1%2525BB%252583n%252BTinh%252BTh%2525E1%2525BA%2525A1ch"
     });
 
@@ -34,7 +40,6 @@ export default async function handler(req, res) {
 
     const text = await response.text();
 
-    // Cho phép gọi từ GitHub Pages
     res.setHeader("Access-Control-Allow-Origin", "*");
     return res.status(200).send(text);
   } catch (err) {
