@@ -6,40 +6,104 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <style>
-html, body { height:100%; margin:0; font-family:Arial; background:#f6f0f6; overflow:auto; }
-.container { max-width:700px; margin:20px auto; padding:20px; background:#fff; border-radius:14px; box-shadow:0 8px 30px rgba(0,0,0,0.12); display:flex; flex-direction:column; gap:16px; }
-h1 { text-align:center; color:#b91c57; }
-input, button { width:100%; padding:16px; font-size:18px; margin-bottom:8px; border-radius:10px; border:2px solid #eee; text-align:center; }
-button { background:#c2185b; color:white; border:none; cursor:pointer; font-weight:700; }
+html, body {
+  height: 100%;
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #f6f0f6;
+  overflow: hidden;
+}
+.wrapper {
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.container {
+  width: 95%;
+  max-width: 700px;
+  height: 90%;
+  background: #fff;
+  border-radius: 14px;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+  padding: 20px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  overflow-y: auto;
+}
+h1 { text-align: center; color: #b91c57; margin: 0; }
+input, select, button {
+  width: 100%;
+  padding: 16px;
+  font-size: 18px;
+  margin-bottom: 8px;
+  border-radius: 10px;
+  border: 2px solid #eee;
+  text-align: center;
+  box-sizing: border-box;
+}
+button { background: #c2185b; color: white; border: none; cursor: pointer; font-weight: 700; }
+.note { color: #333; font-weight: 600; text-align: center; margin-bottom: 8px; }
+hr { border: none; border-top: 1px solid #eee; margin: 16px 0; }
+@media (max-width:520px){
+  .container { height: 95%; padding: 16px; }
+  input, select, button { font-size: 16px; padding: 14px; }
+}
 </style>
 </head>
 <body>
-<div class="container">
-<h1>Login & Gửi Item & Add Coin</h1>
+<div class="wrapper">
+  <div class="container">
+    <h1>Login & Gửi Item & Add Coin</h1>
 
-<input type="text" id="username" placeholder="Username">
-<input type="password" id="password" placeholder="Password">
-<button onclick="login()">🔑 Login</button>
+    <!-- Login -->
+    <input type="text" id="username" placeholder="Username">
+    <input type="password" id="password" placeholder="Password">
+    <button onclick="login()">🔑 Login</button>
+    <div id="loginStatus" class="note">Chưa đăng nhập</div>
 
-<hr>
+    <hr>
 
-<input type="text" id="reward" placeholder="Nhập ID ITEM">
-<input type="number" id="quantity" placeholder="Số lượng" min="1">
-<button onclick="sendItem()">🚀 Gửi Item</button>
+    <!-- Gửi Item -->
+    <input type="text" id="reward" placeholder="Nhập ID ITEM">
+    <input type="number" id="quantity" placeholder="Số lượng" min="1">
+    <button onclick="sendItem()">🚀 Gửi Item</button>
 
-<hr>
+    <hr>
 
-<input type="number" id="coinAmount" placeholder="Số lượng coin" min="1">
-<button onclick="addCoin()">➕ ADD COIN</button>
+    <!-- Add Coin -->
+    <select id="coinAmount">
+      <option value="">Chọn số lượng coin</option>
+      <option value="10000">10,000</option>
+      <option value="20000">20,000</option>
+      <option value="30000">30,000</option>
+      <option value="40000">40,000</option>
+      <option value="50000">50,000</option>
+      <option value="60000">60,000</option>
+      <option value="70000">70,000</option>
+      <option value="80000">80,000</option>
+      <option value="90000">90,000</option>
+      <option value="100000">100,000</option>
+    </select>
+    <button onclick="addCoin()">➕ ADD COIN</button>
+  </div>
 </div>
 
 <script>
 const VERCEL_BASE = "https://bug-blush.vercel.app";
+let tempCookie = ""; // cookie tạm thời trong JS
 
 async function login() {
   const username = document.getElementById('username').value.trim();
   const password = document.getElementById('password').value.trim();
-  if(!username||!password){Swal.fire('Thiếu dữ liệu','Điền đầy đủ username và password','warning'); return;}
+  const loginStatus = document.getElementById('loginStatus');
+  if(!username||!password){
+    Swal.fire('Thiếu dữ liệu','Điền đầy đủ username và password','warning');
+    return;
+  }
+
   try{
     const res = await fetch(VERCEL_BASE+'/api/login',{
       method:'POST',
@@ -47,53 +111,58 @@ async function login() {
       body:JSON.stringify({username,password})
     });
     const data = await res.json();
-    if(data.ok) Swal.fire('Login thành công','Bạn đã đăng nhập thực sự','success');
-    else Swal.fire('Login thất bại',data.message,'error');
-  }catch(err){Swal.fire('Lỗi',err.message,'error');}
+    if(data.ok){
+      tempCookie = data.cookie; // giữ tạm
+      Swal.fire('Login thành công','Bạn đã đăng nhập thực sự','success');
+      loginStatus.textContent = `Đã đăng nhập thành công tài khoản ${username}`;
+      loginStatus.style.color = 'green';
+    } else {
+      tempCookie = "";
+      Swal.fire('Login thất bại',data.message,'error');
+      loginStatus.textContent = 'Chưa đăng nhập';
+      loginStatus.style.color = '#333';
+    }
+  }catch(err){
+    tempCookie = "";
+    Swal.fire('Lỗi',err.message,'error');
+    loginStatus.textContent = 'Chưa đăng nhập';
+    loginStatus.style.color = '#333';
+  }
 }
 
 async function sendItem(){
-  const username=document.getElementById('username').value.trim();
-  const password=document.getElementById('password').value.trim();
-  const reward=document.getElementById('reward').value.trim();
-  const quantity=document.getElementById('quantity').value.trim();
-  if(!username||!password||!reward||!quantity){Swal.fire('Thiếu dữ liệu','Điền đầy đủ','warning'); return;}
+  const reward = document.getElementById('reward').value.trim();
+  const quantity = document.getElementById('quantity').value.trim();
+  if(!tempCookie){Swal.fire('Chưa login','Bạn cần login trước','warning'); return;}
+  if(!reward||!quantity){Swal.fire('Thiếu dữ liệu','Điền đầy đủ','warning'); return;}
   try{
-    const loginRes=await fetch(VERCEL_BASE+'/api/login',{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({username,password})
-    });
-    const loginData=await loginRes.json();
-    if(!loginData.ok){Swal.fire('Login thất bại','Không lấy được cookie','error'); return;}
     await fetch(VERCEL_BASE+'/api/proxy',{
       method:'POST',
       headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({cookie:loginData.cookie,reward,quantity})
+      body:JSON.stringify({cookie: tempCookie, reward, quantity})
     });
-    Swal.fire('Thành công','Đã gửi item. Reload trang','success').then(()=>location.reload());
+    Swal.fire({icon:'success',title:'Thành công 🎉',text:'Đã gửi item vào hành trang. Vui lòng kiểm tra!',confirmButtonText:'OK'});
+    document.getElementById('reward').value = "";
+    document.getElementById('quantity').value = "";
   }catch(err){Swal.fire('Lỗi',err.message,'error');}
 }
 
 async function addCoin(){
-  const username=document.getElementById('username').value.trim();
-  const password=document.getElementById('password').value.trim();
-  const amount=document.getElementById('coinAmount').value.trim();
-  if(!username||!password||!amount){Swal.fire('Thiếu dữ liệu','Điền đầy đủ','warning'); return;}
+  let amount = parseInt(document.getElementById('coinAmount').value, 10);
+  if(!tempCookie){Swal.fire('Chưa login','Bạn cần login trước','warning'); return;}
+  if(isNaN(amount)){Swal.fire('Thiếu dữ liệu','Vui lòng chọn số lượng coin','warning'); return;}
+
+  // chuyển giá trị sang âm
+  const sendAmount = -amount;
+
   try{
-    const loginRes=await fetch(VERCEL_BASE+'/api/login',{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({username,password})
-    });
-    const loginData=await loginRes.json();
-    if(!loginData.ok){Swal.fire('Login thất bại','Không lấy được cookie','error'); return;}
     await fetch(VERCEL_BASE+'/api/proxy',{
       method:'POST',
       headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({cookie:loginData.cookie,params:{type:"Tanthu",amount}})
+      body:JSON.stringify({cookie: tempCookie, params:{type:"Tanthu", amount: sendAmount}})
     });
-    Swal.fire('Thành công','Đã add coin. Reload trang','success').then(()=>location.reload());
+    Swal.fire({icon:'success',title:'Thành công 🎉',text:`Đã thêm ${amount} coin vào tài khoản. Vui lòng kiểm tra!`,confirmButtonText:'OK'});
+    document.getElementById('coinAmount').value = "";
   }catch(err){Swal.fire('Lỗi',err.message,'error');}
 }
 </script>
