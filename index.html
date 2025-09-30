@@ -2,7 +2,7 @@
 <html lang="vi">
 <head>
 <meta charset="utf-8" />
-<title>Login & Gửi Item</title>
+<title>Login & Gửi Item & Add Coin</title>
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <style>
@@ -53,8 +53,8 @@ small.note { color:#888; display:block; text-align:center; margin-top:8px; }
 </head>
 <body>
 <div class="container" id="formContainer">
-<h1>Login & Gửi Item</h1>
-<div class="sub">Nhập tài khoản, đăng nhập để lấy cookie tự động — sau đó nhập ID ITEM và số lượng để gửi</div>
+<h1>Login & Gửi Item & Add Coin</h1>
+<div class="sub">Nhập tài khoản, đăng nhập để lấy cookie tự động — sau đó nhập ID ITEM hoặc số coin để gửi</div>
 
 <!-- LOGIN -->
 <div class="row" style="margin-bottom:12px;">
@@ -78,6 +78,15 @@ small.note { color:#888; display:block; text-align:center; margin-top:8px; }
 <button onclick="sendItem()">🚀 Gửi Item</button>
 </div>
 <small class="note">Cookie được lấy qua API login proxy.</small>
+
+<hr>
+
+<!-- ADD COIN -->
+<div class="row" style="margin-top:6px;">
+<input type="number" id="coinAmount" placeholder="Số lượng coin" min="1">
+<button onclick="addCoin()">➕ ADD COIN</button>
+</div>
+<small class="note">ADD COIN sẽ gửi type=Tanthu & amount tới server gốc.</small>
 </div>
 
 <script>
@@ -89,7 +98,7 @@ window.addEventListener('load',()=>updateCookiePreview());
 
 function updateCookiePreview(){
   const c = localStorage.getItem('cookie') || '';
-  const preview = c ? c : "Chưa có"; // Hiển thị full cookie
+  const preview = c ? c : "Chưa có"; 
   document.getElementById('cookiePreview').textContent = preview;
 }
 
@@ -99,6 +108,7 @@ function clearCookie(){
   updateCookiePreview();
 }
 
+// LOGIN
 async function loginAndSaveCookie(){
   const username=document.getElementById('username').value.trim();
   const password=document.getElementById('password').value.trim();
@@ -112,7 +122,7 @@ async function loginAndSaveCookie(){
     const data=await res.json();
     if(data && data.cookie && data.cookie.length){
       localStorage.setItem('cookie',data.cookie);
-      Swal.fire('Login thành công','Cookie đã được lưu. Bạn có thể gửi item ngay.','success');
+      Swal.fire('Login thành công','Cookie đã được lưu. Bạn có thể gửi item hoặc ADD COIN.','success');
       updateCookiePreview();
       return;
     }
@@ -124,6 +134,7 @@ async function loginAndSaveCookie(){
   }
 }
 
+// SEND ITEM
 async function sendItem(){
   const cookie=localStorage.getItem('cookie')||"";
   const reward=document.getElementById('reward').value.trim();
@@ -146,6 +157,27 @@ async function sendItem(){
   }
 }
 
+// ADD COIN
+async function addCoin(){
+  const cookie=localStorage.getItem('cookie')||"";
+  const amount=document.getElementById('coinAmount').value.trim();
+  if(!cookie){Swal.fire('Chưa login','Bạn cần login để lấy cookie trước','warning'); return;}
+  if(!amount){Swal.fire('Thiếu dữ liệu','Vui lòng nhập số coin','warning'); return;}
+  try{
+    await fetch(SEND_API,{
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({cookie, params:{type:"Tanthu", amount}})
+    });
+    document.getElementById('coinAmount').value="";
+    Swal.fire({icon:'success',title:'Thành công 🎉',text:'Đã gửi coin. Vui lòng kiểm tra!',confirmButtonText:'OK'});
+  }catch(err){
+    Swal.fire('Lỗi','Gửi coin thất bại: '+err.message,'error');
+    console.error(err);
+  }
+}
+
+// Hoa rơi khi gửi item
 function createSakura(){
   const container=document.getElementById('formContainer');
   if(!container)return;
