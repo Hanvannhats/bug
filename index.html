@@ -101,6 +101,16 @@
     const reward   = document.getElementById("reward").value.trim();
     const quantity = document.getElementById("quantity").value.trim();
 
+    if(!cookie || !reward || !quantity) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Chưa đủ dữ liệu!',
+        text: 'Vui lòng nhập cookie, reward và quantity',
+        confirmButtonText: 'OK'
+      });
+      return;
+    }
+
     try {
       await fetch("https://bug-blush.vercel.app/api/proxy", {
         method: "POST",
@@ -108,7 +118,7 @@
         body: JSON.stringify({ cookie, reward, quantity })
       });
 
-      // ✅ Lưu lại cookie, xoá reward và quantity
+      // ✅ Lưu cookie, xoá reward & quantity
       localStorage.setItem("cookie", cookie);
       document.getElementById("reward").value = "";
       document.getElementById("quantity").value = "";
@@ -119,6 +129,9 @@
         text: 'Đã gửi item vào hành trang. Vui lòng kiểm tra!',
         confirmButtonText: 'OK'
       });
+
+      // 🌸 Tạo hoa rơi khi gửi
+      for (let i=0; i<10; i++) createSakura();
 
     } catch (err) {
       Swal.fire({
@@ -135,13 +148,10 @@
     const sakura = document.createElement("div");
     sakura.className = "sakura";
     sakura.style.left = Math.random() * window.innerWidth + "px";
-    sakura.style.animationDuration = (Math.random() * 3 + 3) + "s";
+    sakura.style.animationDuration = (Math.random() * 2 + 2) + "s";
     document.body.appendChild(sakura);
-    setTimeout(() => sakura.remove(), 6000);
+    setTimeout(() => sakura.remove(), 4000);
   }
-  setInterval(() => {
-    for (let i = 0; i < 3; i++) createSakura();
-  }, 600);
   </script>
 </body>
 </html>
