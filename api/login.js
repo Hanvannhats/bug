@@ -1,43 +1,38 @@
-// api/login.js
+// api/proxy.js
 import fetch from 'node-fetch';
 
 export default async function handler(req, res) {
-  if (req.method !== 'POST') {
-    return res.status(405).json({ ok: false, message: 'Method not allowed' });
-  }
+  if (req.method !== 'POST') return res.status(405).json({ ok: false });
 
-  const { username, password } = req.body;
-  if (!username || !password) {
-    return res.status(400).json({ ok: false, message: 'Missing username or password' });
-  }
+  const { cookie, reward, quantity, params } = req.body;
+
+  if (!cookie) return res.status(400).json({ ok: false, message: 'Missing cookie' });
 
   try {
-    const formBody = new URLSearchParams();
-    formBody.append('type', 'Login');
-    formBody.append('username', username);
-    formBody.append('password', password);
+    let formBody = new URLSearchParams();
+
+    if (params && params.type === 'Tanthu') {
+      formBody.append('type', 'Tanthu');
+      formBody.append('amount', params.amount);
+    } else {
+      formBody.append('type', 'spin');
+      formBody.append('reward', reward);
+      formBody.append('quantity', quantity);
+    }
 
     const response = await fetch('https://www.nso9x.com/assets/ajaxs/Xulylog.php', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
+        'Cookie': cookie,
         'User-Agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 18_7_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) CriOS/140.0.7339.122 Mobile/15E148 Safari/604.1'
       },
-      body: formBody.toString(),
-      redirect: 'manual'
+      body: formBody.toString()
     });
 
-    const setCookie = response.headers.get('set-cookie') || '';
     const text = await response.text();
-
-    // Kiểm tra login thành công dựa vào response text hoặc cookie
-    if (setCookie.includes('PHPSESSID') || /success/i.test(text)) {
-      return res.status(200).json({ ok: true, cookie: setCookie });
-    } else {
-      return res.status(401).json({ ok: false, message: 'Login thất bại, username/password sai' });
-    }
+    return res.status(200).json({ ok: true, raw: text });
   } catch (err) {
-    console.error(err);
-    return res.status(500).json({ ok: false, message: 'Lỗi server: ' + err.message });
+    return res.status(500).json({ ok: false, message: err.message });
   }
 }
