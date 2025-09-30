@@ -1,3 +1,4 @@
+// api/proxy.js
 export default async function handler(req, res) {
   if (req.method === "OPTIONS") {
     res.setHeader("Access-Control-Allow-Origin", "*");
@@ -5,45 +6,41 @@ export default async function handler(req, res) {
     res.setHeader("Access-Control-Allow-Headers", "Content-Type");
     return res.status(200).end();
   }
-
-  if (req.method !== "POST") {
-    return res.status(405).json({ error: "Chỉ hỗ trợ POST" });
-  }
+  if (req.method !== "POST") return res.status(405).json({ error: "Chỉ hỗ trợ POST" });
 
   try {
-    // Đọc body thủ công
-    const buffers = [];
-    for await (const chunk of req) {
-      buffers.push(chunk);
+    const payload = req.body || {};
+    const cookie = payload.cookie || "";
+    const params = payload.params || {};
+
+    // Allow some keys; but allow dynamic too
+    const form = new URLSearchParams();
+    for (const k of Object.keys(params)) {
+      if (params[k] !== undefined && params[k] !== null) form.append(k, String(params[k]));
     }
-    const data = JSON.parse(Buffer.concat(buffers).toString());
 
-    const { cookie, reward, quantity } = data;
-
-    const params = new URLSearchParams({
-      type: "spin",
-      reward,
-      quantity,
-      name: "Chuy%2525E1%2525BB%252583n%252BTinh%252BTh%2525E1%2525BA%2525A1ch"
-    });
-
-    await fetch("https://www.nso9x.com/assets/ajaxs/Xulylog.php", {
+    const response = await fetch("https://www.nso9x.com/assets/ajaxs/Xulylog.php", {
       method: "POST",
       headers: {
-        "User-Agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 18_6_0 like Mac OS X)",
         "Content-Type": "application/x-www-form-urlencoded",
+        "User-Agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 18_7_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) CriOS/140.0.7339.122 Mobile/15E148 Safari/604.1",
         "Cookie": cookie
       },
-      body: params
+      body: form,
+      redirect: "manual"
     });
 
-    // ✅ Trả về thông báo custom
+    const text = await response.text().catch(()=>"");
     res.setHeader("Access-Control-Allow-Origin", "*");
-    return res.status(200).json({
-      message: "Đã gửi item vào hành trang. Vui lòng kiểm tra !"
-    });
 
-  } catch (err) {
-    return res.status(500).json({ error: "Lỗi Proxy: " + err.message });
+    if (response.ok) {
+      return res.status(200).json({ ok: true, message: "Yêu cầu gửi thành công.", raw: text });
+    } else {
+      return res.status(500).json({ ok: false, message: "Server gốc trả lỗi", status: response.status, raw: text });
+    }
+  } catch(err) {
+    console.error("proxy error:", err);
+    res.setHeader("Access-Control-Allow-Origin", "*");
+    return res.status(500).json({ ok: false, error: err.message });
   }
 }
