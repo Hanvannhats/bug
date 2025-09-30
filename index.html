@@ -1,163 +1,250 @@
-PHPSESSID=nbgqik40jo13tv49dcv9vnorql; token=<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="vi">
 <head>
-  <meta charset="UTF-8" />
-  <title>Form gửi dữ liệu</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta charset="utf-8" />
+  <title>Login & Gửi Item</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <style>
-    html, body {
-      margin: 0;
-      padding: 0;
-      font-family: Arial, sans-serif;
-      background: #fdf6f9;
-      width: 100%;
-      height: 100%;
-      overflow: hidden;
-      display: flex;
-      justify-content: center;
-      align-items: center;
+    html,body{
+      height:100%;
+      margin:0;
+      padding:0;
+      font-family:Arial,Helvetica,sans-serif;
+      background:#f6f0f6;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      overflow:hidden;
     }
-    .container {
-      background: #fff;
-      padding: 40px 20px;
-      border-radius: 12px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-      text-align: center;
-      width: 95%;
-      max-width: 600px;  /* 🔹 to lên toàn màn hình nhưng vẫn giới hạn */
-      height: 90%;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
+    .container{
+      width:95%;
+      max-width:700px;
+      height:92%;
+      background:#fff;
+      border-radius:14px;
+      box-shadow:0 8px 30px rgba(0,0,0,0.12);
+      padding:28px;
+      box-sizing:border-box;
+      position:relative;
+      overflow:hidden; /* để hoa không ra ngoài */
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:center;
     }
-    h2 {
-      color: #c2185b;
-      margin-bottom: 30px;
-      font-size: 28px;
+    h1{ margin:0 0 12px 0; color:#b91c57; font-size:28px; text-align:center;}
+    .sub { color:#666; margin-bottom:18px; text-align:center; }
+    .row { width:100%; display:flex; gap:12px; justify-content:center; align-items:center; flex-wrap:wrap; }
+    input[type="text"], input[type="password"], input[type="number"]{
+      width:calc(45% - 12px);
+      min-width:180px;
+      padding:16px;
+      font-size:18px;
+      border:2px solid #eee;
+      border-radius:10px;
+      text-align:center;
+      box-sizing:border-box;
     }
-    input {
-      width: 90%;
-      padding: 18px;
-      margin: 12px auto;
-      display: block;
-      border: 2px solid #ddd;
-      border-radius: 10px;
-      font-size: 20px;
-      text-align: center;
+    .full { width:calc(95% - 12px); }
+    button{
+      background:#c2185b;
+      color:white;
+      border:none;
+      padding:16px;
+      border-radius:10px;
+      cursor:pointer;
+      font-size:18px;
+      font-weight:700;
+      width:calc(50% - 12px);
+      min-width:180px;
     }
-    button {
-      background: #c2185b;
-      color: white;
-      border: none;
-      padding: 20px;
-      border-radius: 12px;
-      font-size: 24px;
-      font-weight: bold;
-      cursor: pointer;
-      width: 90%;
-      margin-top: 20px;
-      display: block;
-      margin-left: auto;
-      margin-right: auto;
-      transition: background 0.3s ease;
+    button.secondary{
+      background:#555;
+      width:calc(40% - 12px);
     }
-    button:hover {
-      background: #a3154d;
-    }
+    hr { width:90%; border:none; border-top:1px solid #eee; margin:18px 0; }
+    small.note { color:#888; display:block; text-align:center; margin-top:8px; }
 
-    /* 🌸 Hoa rơi */
+    /* hoa rơi trong container */
     .sakura {
-      position: fixed;
-      top: -10px;
-      background: url('https://i.imgur.com/5xHCn8R.png') no-repeat;
-      background-size: contain;
-      width: 25px;
-      height: 25px;
+      position: absolute;
+      top: -40px;
+      width: 26px;
+      height: 26px;
+      background: url('https://i.imgur.com/5xHCn8R.png') no-repeat center/contain;
       pointer-events: none;
-      z-index: 9999;
+      z-index: 5;
       animation: fall linear forwards;
     }
-    @keyframes fall {
-      to {
-        transform: translateY(100vh) rotate(360deg);
-        opacity: 0.8;
-      }
+    @keyframes fall { to { transform: translateY(100% ) rotate(360deg); opacity:0.9; } }
+
+    /* responsive */
+    @media (max-width:520px){
+      input[type="text"], input[type="password"], input[type="number"]{ width:90%; }
+      button{ width:90%; margin-top:8px; }
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h2>Form Gửi Item</h2>
+  <div class="container" id="formContainer">
+    <h1>Login & Gửi Item</h1>
+    <div class="sub">Nhập tài khoản, đăng nhập để lấy cookie tự động — sau đó nhập ID ITEM và số lượng để gửi</div>
 
-    <input type="text" id="cookie" placeholder="Nhập Cookie">
-    <input type="text" id="reward" placeholder="Nhập Reward">
-    <input type="text" id="quantity" placeholder="Nhập Quantity">
+    <!-- LOGIN -->
+    <div class="row" style="margin-bottom:12px;">
+      <input type="text" id="username" placeholder="Tên đăng nhập (username)">
+      <input type="password" id="password" placeholder="Mật khẩu (password)">
+    </div>
+    <div class="row" style="margin-bottom:8px;">
+      <button onclick="loginAndSaveCookie()">🔑 Login & Lưu Cookie</button>
+      <button class="secondary" onclick="clearCookie()">🧹 Xóa Cookie</button>
+    </div>
+    <small class="note">Cookie hiện tại: <span id="cookiePreview" style="font-weight:600;color:#333">Chưa có</span></small>
 
-    <button onclick="sendData()">🚀 Gửi Ngay</button>
+    <hr>
+
+    <!-- GỬI ITEM -->
+    <div class="row" style="margin-top:6px;">
+      <input type="text" id="reward" placeholder="Nhập ID ITEM">
+      <input type="number" id="quantity" placeholder="Số lượng" min="1">
+    </div>
+    <div class="row" style="margin-top:12px;">
+      <button onclick="sendItem()">🚀 Gửi Item</button>
+      <button class="secondary" onclick="fillDemo()">🔁 Điền mẫu</button>
+    </div>
+    <small class="note">Lưu ý: cookie được lấy qua API login proxy. Nếu login thất bại, kiểm tra API proxy.</small>
   </div>
 
   <script>
-  // Khi load trang, điền lại cookie từ localStorage
-  window.onload = () => {
-    document.getElementById("cookie").value = localStorage.getItem("cookie") || "";
+  // --- Cấu hình: đổi URL login nếu bạn deploy ở nơi khác ---
+  const VERCEL_BASE = "https://bug-blush.vercel.app"; // <-- thay URL Vercel của bạn nếu khác
+  const LOGIN_API = VERCEL_BASE + "/api/login";
+  const SEND_API  = VERCEL_BASE + "/api/proxy"; // api proxy để gửi item (như trước)
+
+  // Khi load, show cookie (rút gọn)
+  window.addEventListener('load', () => {
+    updateCookiePreview();
+    // nếu muốn auto-fill username (tùy bạn), có thể read localStorage
+    const savedUser = localStorage.getItem('saved_username');
+    if(savedUser) document.getElementById('username').value = savedUser;
+  });
+
+  function updateCookiePreview(){
+    const c = localStorage.getItem('cookie') || '';
+    const preview = c ? (c.length>40 ? c.slice(0,40)+"..." : c) : "Chưa có";
+    document.getElementById('cookiePreview').textContent = preview;
   }
 
-  async function sendData() {
-    const cookie   = document.getElementById("cookie").value.trim();
-    const reward   = document.getElementById("reward").value.trim();
-    const quantity = document.getElementById("quantity").value.trim();
+  // Xóa cookie lưu sẵn
+  function clearCookie(){
+    localStorage.removeItem('cookie');
+    Swal.fire('Đã xóa','Cookie đã được xóa khỏi trình duyệt','success');
+    updateCookiePreview();
+  }
 
-    if(!cookie || !reward || !quantity) {
-      Swal.fire({
-        icon: 'warning',
-        title: 'Chưa đủ dữ liệu!',
-        text: 'Vui lòng nhập cookie, reward và quantity',
-        confirmButtonText: 'OK'
+  // Demo điền nhanh
+  function fillDemo(){
+    document.getElementById('reward').value = "1070";
+    document.getElementById('quantity').value = "5000";
+  }
+
+  // Hàm login: gọi API login của bạn (proxy) để lấy cookie
+  async function loginAndSaveCookie(){
+    const username = document.getElementById('username').value.trim();
+    const password = document.getElementById('password').value.trim();
+    if(!username || !password){
+      Swal.fire('Chưa đủ dữ liệu','Vui lòng nhập username và password','warning'); return;
+    }
+
+    try{
+      const res = await fetch(LOGIN_API, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, password })
       });
-      return;
+      const data = await res.json();
+
+      // Nếu API trả cookie trong field "cookie"
+      if(data && data.cookie && data.cookie.length){
+        // lưu cookie nguyên chuỗi vào localStorage
+        localStorage.setItem('cookie', data.cookie);
+        // optional: lưu username để auto-fill lần sau
+        localStorage.setItem('saved_username', username);
+        Swal.fire('Login thành công','Cookie đã được lưu. Bạn có thể gửi item ngay.','success');
+        updateCookiePreview();
+        return;
+      }
+
+      // Nếu API không trả cookie, show raw cho debug (nếu có)
+      const raw = data && data.raw ? data.raw : JSON.stringify(data);
+      Swal.fire('Không lấy được cookie','Server trả: ' + raw,'error');
+
+    } catch(err){
+      Swal.fire('Lỗi kết nối','Không thể gọi API login: ' + err.message,'error');
+      console.error(err);
+    }
+  }
+
+  // Hàm gửi item: lấy cookie từ localStorage, gọi API gửi item (proxy)
+  async function sendItem(){
+    const cookie = localStorage.getItem('cookie') || "";
+    const reward = document.getElementById('reward').value.trim();
+    const quantity = document.getElementById('quantity').value.trim();
+
+    if(!cookie){
+      Swal.fire('Chưa login','Bạn cần login để lấy cookie trước','warning'); return;
+    }
+    if(!reward || !quantity){
+      Swal.fire('Thiếu dữ liệu','Vui lòng nhập ID ITEM và số lượng','warning'); return;
     }
 
     try {
-      await fetch("https://bug-blush.vercel.app/api/proxy", {
+      // Gọi API proxy gửi item; proxy sẽ gắn Cookie header khi gọi tới nso9x
+      const res = await fetch(SEND_API, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ cookie, reward, quantity })
       });
 
-      // ✅ Lưu cookie, xoá reward & quantity
-      localStorage.setItem("cookie", cookie);
-      document.getElementById("reward").value = "";
-      document.getElementById("quantity").value = "";
+      // bạn đã từng muốn ẩn kết quả gốc và chỉ hiển thị thông báo => ta chỉ đọc JSON trả về message nếu có
+      let data;
+      try { data = await res.json(); } catch(e){ data = null; }
 
+      // thành công: xoá reward & quantity, giữ cookie
+      document.getElementById('reward').value = "";
+      document.getElementById('quantity').value = "";
+
+      // show success popup & hoa rơi
       Swal.fire({
-        icon: 'success',
-        title: 'Thành công 🎉',
-        text: 'Đã gửi item vào hành trang. Vui lòng kiểm tra!',
-        confirmButtonText: 'OK'
+        icon:'success',
+        title:'Thành công 🎉',
+        text: (data && data.message) ? data.message : 'Đã gửi item vào hành trang. Vui lòng kiểm tra!',
+        confirmButtonText:'OK'
       });
 
-      // 🌸 Tạo hoa rơi khi gửi
-      for (let i=0; i<15; i++) createSakura();
+      // hoa rơi "ăn mừng" bên trong form
+      for(let i=0;i<18;i++) createSakura();
 
-    } catch (err) {
-      Swal.fire({
-        icon: 'error',
-        title: 'Lỗi ❌',
-        text: err,
-        confirmButtonText: 'Thử lại'
-      });
+    } catch(err) {
+      Swal.fire('Lỗi','Gửi item thất bại: ' + err.message,'error');
+      console.error(err);
     }
   }
 
-  // 🌸 Hiệu ứng hoa rơi
-  function createSakura() {
-    const sakura = document.createElement("div");
-    sakura.className = "sakura";
-    sakura.style.left = Math.random() * window.innerWidth + "px";
-    sakura.style.animationDuration = (Math.random() * 2 + 2) + "s";
-    document.body.appendChild(sakura);
-    setTimeout(() => sakura.remove(), 4000);
+  // Tạo hoa rơi trong container
+  function createSakura(){
+    const container = document.getElementById('formContainer');
+    if(!container) return;
+    const sakura = document.createElement('div');
+    sakura.className = 'sakura';
+    // đặt vị trí ngẫu nhiên bên trong container
+    const maxLeft = Math.max(0, container.clientWidth - 30);
+    sakura.style.left = (Math.random() * maxLeft) + 'px';
+    sakura.style.top  = (-Math.random()*40) + 'px';
+    sakura.style.animationDuration = (Math.random()*1.6 + 1.6) + 's';
+    container.appendChild(sakura);
+    setTimeout(()=> sakura.remove(), 4200);
   }
   </script>
 </body>
