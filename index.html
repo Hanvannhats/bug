@@ -5,7 +5,7 @@
   <title>Form gửi dữ liệu</title>
 </head>
 <body>
-  <h2>Form Gửi Dữ Liệu</h2>
+  <h2>Form Gửi Item</h2>
 
   <label>Cookie:</label><br>
   <input type="text" id="cookie" size="80"><br><br>
@@ -28,14 +28,13 @@
     const quantity = document.getElementById("quantity").value.trim();
 
     try {
-      // ✅ Gửi request tới proxy API trên Vercel
       const response = await fetch("https://bug-blush.vercel.app/api/proxy", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ cookie, reward, quantity })
       });
 
-      const resultText = await response.text();
+      const result = await response.json();
       document.getElementById("result").textContent = result.message;
     } catch (err) {
       document.getElementById("result").textContent = "Lỗi: " + err;
