@@ -1,4 +1,4 @@
-// File: api/login.js
+// api/login.js
 export default async function handler(req, res) {
   // CORS preflight
   if (req.method === "OPTIONS") {
@@ -23,7 +23,7 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: "Thiếu username hoặc password" });
     }
 
-    // Tạo body x-www-form-urlencoded giống curl
+    // Tạo body x-www-form-urlencoded
     const params = new URLSearchParams({
       type: "Login",
       username,
@@ -44,15 +44,17 @@ export default async function handler(req, res) {
     // Lấy Set-Cookie từ header
     const setCookie = response.headers.get("set-cookie") || "";
 
-    // Lấy body text để debug nếu cần
-    const rawBody = await response.text();
+    // Lọc chỉ giữ PHPSESSID và token (giả sử site trả token; nếu không có, sẽ giữ nguyên PHPSESSID)
+    let cookie = "";
+    if (setCookie) {
+      const matchPHP = setCookie.match(/PHPSESSID=[^;]+/);
+      const matchToken = setCookie.match(/token=[^;]+/);
+      cookie = [matchPHP && matchPHP[0], matchToken && matchToken[0]].filter(Boolean).join("; ");
+    }
 
-    // Trả về cookie và raw body
+    // Trả về cookie cho frontend
     res.setHeader("Access-Control-Allow-Origin", "*");
-    return res.status(200).json({
-      cookie: setCookie,
-      raw: rawBody
-    });
+    return res.status(200).json({ cookie });
 
   } catch (err) {
     console.error("Login proxy error:", err);
