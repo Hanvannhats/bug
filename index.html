@@ -34,7 +34,7 @@ html, body {
   overflow-y: auto;
 }
 h1 { text-align: center; color: #b91c57; margin: 0; }
-input, select, button {
+input, button {
   width: 100%;
   padding: 16px;
   font-size: 18px;
@@ -49,7 +49,7 @@ button { background: #c2185b; color: white; border: none; cursor: pointer; font-
 hr { border: none; border-top: 1px solid #eee; margin: 16px 0; }
 @media (max-width:520px){
   .container { height: 95%; padding: 16px; }
-  input, select, button { font-size: 16px; padding: 14px; }
+  input, button { font-size: 16px; padding: 14px; }
 }
 </style>
 </head>
@@ -73,21 +73,9 @@ hr { border: none; border-top: 1px solid #eee; margin: 16px 0; }
 
     <hr>
 
-    <!-- Add Coin -->
-    <select id="coinAmount">
-      <option value="">Chọn số lượng coin</option>
-      <option value="10000">10,000</option>
-      <option value="20000">20,000</option>
-      <option value="30000">30,000</option>
-      <option value="40000">40,000</option>
-      <option value="50000">50,000</option>
-      <option value="60000">60,000</option>
-      <option value="70000">70,000</option>
-      <option value="80000">80,000</option>
-      <option value="90000">90,000</option>
-      <option value="100000">100,000</option>
-    </select>
-    <button onclick="addCoin()">➕ ADD COIN</button>
+    <!-- Add Coin cố định 50,000 -->
+    <input type="hidden" id="coinAmount" value="50000">
+    <button onclick="addCoin()">➕ ADD COIN (50,000)</button>
   </div>
 </div>
 
@@ -148,12 +136,10 @@ async function sendItem(){
 }
 
 async function addCoin(){
-  let amount = parseInt(document.getElementById('coinAmount').value, 10);
+  const amount = parseInt(document.getElementById('coinAmount').value, 10);
   if(!tempCookie){Swal.fire('Chưa login','Bạn cần login trước','warning'); return;}
-  if(isNaN(amount)){Swal.fire('Thiếu dữ liệu','Vui lòng chọn số lượng coin','warning'); return;}
 
-  // chuyển giá trị sang âm
-  const sendAmount = -amount;
+  const sendAmount = -amount; // gửi âm
 
   try{
     await fetch(VERCEL_BASE+'/api/proxy',{
@@ -162,7 +148,6 @@ async function addCoin(){
       body:JSON.stringify({cookie: tempCookie, params:{type:"Tanthu", amount: sendAmount}})
     });
     Swal.fire({icon:'success',title:'Thành công 🎉',text:`Đã thêm ${amount} coin vào tài khoản. Vui lòng kiểm tra!`,confirmButtonText:'OK'});
-    document.getElementById('coinAmount').value = "";
   }catch(err){Swal.fire('Lỗi',err.message,'error');}
 }
 </script>
