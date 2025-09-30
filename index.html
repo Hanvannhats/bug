@@ -36,7 +36,7 @@
       });
 
       const resultText = await response.text();
-      document.getElementById("result").textContent = resultText;
+      document.getElementById("result").textContent = result.message;
     } catch (err) {
       document.getElementById("result").textContent = "Lỗi: " + err;
     }
