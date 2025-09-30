@@ -14,7 +14,6 @@ html, body {
   background: #f6f0f6;
   overflow: auto;
 }
-
 .container {
   width: 95%;
   max-width: 700px;
@@ -28,76 +27,24 @@ html, body {
   flex-direction: column;
   align-items: center;
 }
-
-h1 {
-  color: #b91c57;
-  font-size: 36px;
-  text-align: center;
-  margin-bottom: 16px;
-}
-
-.sub {
-  color: #666;
-  margin-bottom: 20px;
-  text-align: center;
-}
-
-.row {
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  gap: 16px;
-  flex-wrap: wrap;
-  margin-bottom: 16px;
-}
-
+h1 { color: #b91c57; font-size: 36px; text-align: center; margin-bottom: 16px; }
+.sub { color: #666; margin-bottom: 20px; text-align: center; }
+.row { width: 100%; display: flex; justify-content: center; gap: 16px; flex-wrap: wrap; margin-bottom: 16px; }
 input[type="text"], input[type="password"], input[type="number"] {
-  width: 40%;
-  min-width: 180px;
-  padding: 20px;
-  font-size: 20px;
-  border-radius: 12px;
-  border: 2px solid #eee;
-  text-align: center;
-  box-sizing: border-box;
+  width: 40%; min-width: 180px; padding: 20px; font-size: 20px;
+  border-radius: 12px; border: 2px solid #eee; text-align: center; box-sizing: border-box;
 }
-
 button {
-  padding: 20px;
-  font-size: 22px;
-  font-weight: 700;
-  border: none;
-  border-radius: 12px;
-  cursor: pointer;
-  width: 45%;
-  min-width: 180px;
-  background: #c2185b;
-  color: #fff;
+  padding: 20px; font-size: 22px; font-weight: 700; border: none;
+  border-radius: 12px; cursor: pointer; width: 45%; min-width: 180px;
+  background: #c2185b; color: #fff;
 }
-
-button.secondary {
-  background: #555;
-  width: 40%;
-}
-
-hr {
-  width: 90%;
-  border: none;
-  border-top: 1px solid #eee;
-  margin: 20px 0;
-}
-
-small.note {
-  color: #888;
-  text-align: center;
-  display: block;
-  margin-top: 8px;
-}
-
+button.secondary { background: #555; width: 40%; }
+hr { width: 90%; border: none; border-top: 1px solid #eee; margin: 20px 0; }
+small.note { color: #888; text-align: center; display: block; margin-top: 8px; }
 @media(max-width:600px){
   input[type="text"], input[type="password"], input[type="number"], button {
-    width: 90%;
-    margin-top: 10px;
+    width: 90%; margin-top: 10px;
   }
 }
 </style>
@@ -144,14 +91,11 @@ small.note {
 const LOGIN_API = "https://<your-vercel>.vercel.app/api/login"; // proxy login
 const ACTION_API = "https://<your-vercel>.vercel.app/api/proxy"; // proxy send item/add coin
 
-// Hiển thị username hiện tại
 window.addEventListener('load', ()=>updateCookiePreview());
 function updateCookiePreview(){
   const username = localStorage.getItem('username') || '';
   document.getElementById('cookiePreview').textContent = username || "Chưa đăng nhập";
 }
-
-// Logout
 function logout(){
   localStorage.removeItem('cookie');
   localStorage.removeItem('username');
@@ -178,4 +122,56 @@ async function loginAndSaveCookie(){
       Swal.fire('Đăng nhập thành công','Cookie đã lưu','success');
       updateCookiePreview();
     }else{
-     
+      Swal.fire('Đăng nhập thất bại','Kiểm tra username/password','error');
+    }
+  }catch(err){
+    Swal.fire('Lỗi','Không thể login: '+err.message,'error');
+  }
+}
+
+// Gửi Item
+async function sendItem(){
+  const cookie = localStorage.getItem('cookie')||"";
+  const reward = document.getElementById('reward').value.trim();
+  const quantity = document.getElementById('quantity').value.trim();
+  if(!cookie){ Swal.fire('Chưa login','Bạn cần login','warning'); return; }
+  if(!reward || !quantity){ Swal.fire('Thiếu dữ liệu','Nhập reward và quantity','warning'); return; }
+
+  try{
+    const res = await fetch(ACTION_API,{
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({ cookie, params:{ type:"spin", reward, quantity } })
+    });
+    const data = await res.json().catch(()=>null);
+    Swal.fire('Gửi Item', data && data.message ? data.message : "Đã gửi item", (data && data.ok)?'success':'error');
+    document.getElementById('reward').value="";
+    document.getElementById('quantity').value="";
+  }catch(err){
+    Swal.fire('Lỗi','Gửi item thất bại: '+err.message,'error');
+  }
+}
+
+// Add Coin
+async function addCoin(){
+  const cookie = localStorage.getItem('cookie')||"";
+  const amount = document.getElementById('addAmount').value.trim();
+  if(!cookie){ Swal.fire('Chưa login','Bạn cần login','warning'); return; }
+  if(!amount){ Swal.fire('Thiếu dữ liệu','Nhập số coin','warning'); return; }
+
+  try{
+    const res = await fetch(ACTION_API,{
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({ cookie, params:{ type:"Tanthu", amount } })
+    });
+    const data = await res.json().catch(()=>null);
+    Swal.fire('ADD COIN', data && data.message ? data.message : "Đã gửi ADD COIN", (data && data.ok)?'success':'error');
+    document.getElementById('addAmount').value="";
+  }catch(err){
+    Swal.fire('Lỗi','ADD COIN thất bại: '+err.message,'error');
+  }
+}
+</script>
+</body>
+</html>
