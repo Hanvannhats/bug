@@ -40,8 +40,9 @@ export default async function handler(req, res) {
 
     const text = await response.text();
 
-    res.setHeader("Access-Control-Allow-Origin", "*");
-    return res.status(200).send(text);
+    return res.status(200).json({
+  message: "Đã gửi item vào hành trang. Vui lòng kiểm tra !"
+});
   } catch (err) {
     return res.status(500).json({ error: "Lỗi Proxy: " + err.message });
   }
